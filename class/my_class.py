@@ -3,13 +3,12 @@ from pyspark.sql import functions as F
 from functools import reduce
 from pyspark.sql.types import *
 import pandas as pd
- 
- 
+
 class SparkDataCheck:
     """
     A data quality class for Spark SQL style data frames
     """
- 
+    
     def __init__(self, df: DataFrame):
         """
         Initialize SparkDataCheck with a Spark DataFrame.
@@ -33,13 +32,13 @@ class SparkDataCheck:
         df = spark.read.load(path, format="csv", header=True, inferSchema=True)
         return cls(df)
     
-    #############################
+    ##############################
     # Validation methods
     def check_numeric_range(self, column: str, lower: str = None, upper: str = None):
         """
         Append Boolean column indicating whether numeric values fall within bounds.
         """
-        # Require at least one bound
+        # Requires at least one bound
         if lower is None and upper is None:
             print("check_numeric_range: please supply at least one of 'lower' or 'upper'.")
             return self
@@ -49,8 +48,8 @@ class SparkDataCheck:
         col_type = dict(self.df.dtypes).get(column, "")
         if col_type.lower() not in numeric_types:
             print(
-                f"check_numeric_bounds: column '{column}' has type '{col_type}' "
-                f"which is not numeric. DataFrame is unchanged."
+                f"check_numeric_range: column '{column}' has type '{col_type}' "
+                f"which is not numeric. Returning original DataFrame." # If non-numeric column supplied it gets returned unchanged
             )
             return self
         
@@ -66,7 +65,8 @@ class SparkDataCheck:
             
         # Return null when input is null
         result_expr = F.when(col_expr.isNull(), None).otherwise(check_expr)
- 
+
+        
         self.df = self.df.withColumn(result_col, result_expr)
         return self
     
@@ -78,16 +78,16 @@ class SparkDataCheck:
         if col_type.lower() != "string":
             print(
                 f"check_categorical_levels: column '{column}' has type '{col_type}' "
-                f"which is not a string. DataFrame is unchanged."
+                f"which is not a string. DataFrame is unchanged." # Unchanged if non-string provided
             )
             return self
- 
+        
         result_col = f"{column}_in_levels"
         col_expr = F.col(column)
- 
+        
         # Return null when input is null
         result_expr = F.when(col_expr.isNull(), None).otherwise(col_expr.isin(levels))
- 
+        
         self.df = self.df.withColumn(result_col, result_expr)
         return self
     
@@ -116,26 +116,26 @@ class SparkDataCheck:
             if col_type.lower() not in numeric_types:
                 print(
                     f"summarize_numeric: column '{column}' has type '{col_type}' "
-                    f"which is not numeric. Returning None."
+                    f"which is not numeric. Returning None." 
                 )
                 return None
             
-            agg_exprs = [F.min(F.col(f"`{column}`")).alias(f"{column}_min"),
-                         F.max(F.col(f"`{column}`")).alias(f"{column}_max")]
+            agg_exprs = [F.min(F.col(f"`{column}`")).alias(f"{column}_min"), 
+                         F.max(F.col(f"`{column}`")).alias(f"{column}_max")] # Find min/max of each col in spark dataframe, .alias renames the column
             
             if group_by:
-                result = self.df.groupBy(group_by).agg(*agg_exprs).orderBy(group_by)
+                result = self.df.groupBy(group_by).agg(*agg_exprs).orderBy(group_by) # Group_by clause
             else:
                 result = self.df.agg(*agg_exprs)
- 
+                
             return result.toPandas()
-
-        # Summary for all numeric columns
-        numeric_cols = [c for c, t in self.df.dtypes if t.lower() in numeric_types]
+        
+        # Summary for all numeric columns (no column provided)
+        numeric_cols = [c for c, t in self.df.dtypes if t.lower() in numeric_types] #List comprehension, pulling tuples of column name and datatype
         
         if not numeric_cols:
-            print("summarize_numeric: no numeric columns found in the DataFrame.")
-            return None
+            print("summarize_numeric: no numeric columns found in the DataFrame.") 
+            return None 
         
         if group_by:
             # Summarize each numeric column separately then merge on the group key
@@ -149,12 +149,12 @@ class SparkDataCheck:
                 )
             
             partial_dfs = [summarize_one(c) for c in numeric_cols]
-            return reduce(lambda left, right: pd.merge(left, right, on=group_by), partial_dfs)
+            return reduce(lambda left, right: pd.merge(left, right, on=group_by), partial_dfs) # Reduce min and max stats of all columns and merge into single dataframe
         else:
             agg_exprs = [expr
                          for c in numeric_cols
                          for expr in (F.min(F.col(f"`{c}`")).alias(f"{c}_min"),
-                                      F.max(F.col(f"`{c}`")).alias(f"{c}_max"))]
+                                      F.max(F.col(f"`{c}`")).alias(f"{c}_max"))] # Again using .alias to rename new columns
             return self.df.agg(*agg_exprs).toPandas()
         
         
@@ -173,8 +173,8 @@ class SparkDataCheck:
                 f"which is not a string column."
             )
             return None
- 
-        # Validate second column
+        
+        # Validate second column (optional)
         if column2 is not None:
             col2_type = dtype_map.get(column2, "")
             if col2_type.lower() != "string":
@@ -183,14 +183,14 @@ class SparkDataCheck:
                     f"which is not a string column."
                 )
                 return None
- 
+            
         group_cols = [column] if column2 is None else [column, column2]
- 
+        
         result = (
             self.df.groupBy(*group_cols)
             .agg(F.count("*").alias("count"))
             .orderBy(*group_cols)
         )
- 
+        
         return result.toPandas()
             
