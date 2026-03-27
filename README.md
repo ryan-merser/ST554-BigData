@@ -13,9 +13,15 @@ In the second part of the project, we’ll analyze some data using both spark SQ
 pandas-on-spark data frames to get some practice with that. 
 
 **Important: Substantial commit history**
+
 Since I did not give insightful descriptions for each commit (I will do this in the future), I will outline the commit history below.
 This is mainly the context for file uploads, and each commit with its associated SHA:
 
+3/26:
+
+* Final touches of notebook + conclusion added, SHA: 94ca9c9f9b4d70002da0af5b111f79c89b346c86
+* Enhanced narrative of notebook, added more examples + sorting of NFL data, SHA: 3fe7f48254761fc64dc3caf40e63566162614be8
+* Added comments in my_class for extra context, fixed indentations, SHA: 4175ab34b39f4dadbbb4a77dd4789a74f4873ed5
 
 3/23:
 
