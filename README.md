@@ -1,37 +1,25 @@
 ------
-**Project 2**
+**Final Project**
 
-This project assesses basic use of Spark and some of the programming techniques we’ve covered.
+This is an individual project. This project is meant to assess ability to use spark to handle streaming
+data, use spark for fitting a machine learning model, and a few other things we’ve talked about in class (and
+a few we haven’t!)
 
-**Big Picture Goals**
+**Goals**
 
-In the first part of the project, we will design and implement a data quality class in pyspark.
-Rather than writing a Spark script with standard spark functionality, you will create a python class that
-wraps a Spark (SQL style) DataFrame and provides functionality for cleaning and checking the data.
-
-In the second part of the project, we’ll analyze some data using both spark SQL style data frames and the
-pandas-on-spark data frames to get some practice with that. 
-
-**Important: Substantial commit history**
-
-Since I did not give insightful descriptions for each commit (I will do this in the future), I will outline the commit history below.
-This is mainly the context for file uploads, and each commit with its associated SHA:
-
-3/26:
-
-* Final touches of notebook + conclusion added, SHA: 94ca9c9f9b4d70002da0af5b111f79c89b346c86
-* Enhanced narrative of notebook, added more examples + sorting of NFL data, SHA: 3fe7f48254761fc64dc3caf40e63566162614be8
-* Added comments in my_class for extra context, fixed indentations, SHA: 4175ab34b39f4dadbbb4a77dd4789a74f4873ed5
-
-3/23:
-
-* Uploaded troubleshooting notebook (probably not substantial), SHA: 0db0d76a36c50a25f01267991cf4d2dad5e2a958
-* Fixed errors in the notebook with summarization methods on air quality data using class, added code for analysis of NFL data with pandas on Spark and Spark SQL, SHA: 6c346cdcc7ae378b542632186939f63d57b5bbd2
-* Fixed AnalysisException errors in class when reading columns; backticks added everywhere a column name is passed to F.col(), SHA: c8b63f7873af390a898138de6f2fad88cb81152f
-* Uploaded first version of project notebook, testing my_class methods on air quality data, SHA: a5719e7264fcae3dbe983de74644d456e4fb7cb2
-
-3/22:
-
-* Renamed the filename of Python class to my_class to fix errors, SHA: 344859c7ae588f7efc342de36024be86749a234b
-* Uploaded notebook for testing import of Python class, SHA: 7819bb3e155e7a76cae7e9be6f1c18a8234a5588
-* Uploaded first version of Python SparkDataCheck class, SHA: 05e385c253d78cdf1ab83c36115f5160db6e59ae
+For this project, we’ll
+• create or use an already-created GitHub repo to document your work
+– You must commit often! At least 5 substantial commits must exist on this project. This allows
+us to see how your work develops over time. If this is not done, substantial credit will be lost.
+• write a Jupyter notebook that fits a machine learning model using pyspark’s MLlib module
+• in that same notebook you’ll write code to read in a stream of data (we’ll produce that data ourselves
+using a .py file)
+– This .py file should also be included in the repo.
+• we’ll use the model to do predictions on the stream and write those out to the console!
+Both the .ipynb file and the .py file should exist in your repo!
+The data is modified from the UCI machine learning repository. The study was about relating power
+consumption from different zones of Tetouan city to various factors like time of day, temperature, and
+humidity.
+• You’ll have a chunk of the (modified) data to build your model on.
+• You will then ‘stream data’ to a folder in the form of CSV files. You’ll be monitoring this folder. When
+data comes in you’ll use your fitted model to predict on the incoming data!
